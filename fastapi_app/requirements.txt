@@ -1,0 +1,11 @@
+# FastAPI Trading Bot Requirements
+fastapi>=0.110.0
+uvicorn>=0.29.0
+pydantic>=2.0.0
+httpx>=0.27.0          # for async testing
+pytest>=7.4.0
+python-dotenv>=1.0.0
+pyotp>=2.9.0           # optional TOTP auto-login
+# Official Kotak Neo Python SDK (import: neo_api_client). PyPI: kotakneoapi.
+# GitHub https://github.com/Kotak-Neo/kotak-neo-python — v3.x (place_order: CNC/NRML/MIS/MTF only; no BO/CO).
+kotakneoapi>=3.0.7,<4

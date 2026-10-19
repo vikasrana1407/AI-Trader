@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment — NEVER commit real credentials
+.env
+
+# SQLite database (persisted via Docker volume)
+data/
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local testing scripts
+verify_broker_client.py

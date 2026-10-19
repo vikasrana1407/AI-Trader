@@ -1,0 +1,23 @@
+services:
+  trading-bot:
+    build: .
+    container_name: kotak-trading-bot
+    restart: unless-stopped
+    ports:
+      - "8010:8000"
+    volumes:
+      - ./data:/app/data      # SQLite DB persists outside container
+      - ./logs:/app/logs      # Log files persist outside container
+    env_file:
+      - .env                  # Copy from .env.example → .env
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"

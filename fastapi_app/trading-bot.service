@@ -1,0 +1,33 @@
+[Unit]
+Description=Kotak Neo NIFTY F&O Trading Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tradingbot
+Group=tradingbot
+WorkingDirectory=/opt/trading-bot
+EnvironmentFile=/opt/trading-bot/.env
+
+# Exactly ONE uvicorn worker bound to localhost
+ExecStart=/opt/trading-bot/venv/bin/uvicorn fastapi_app.run:app --host 127.0.0.1 --port 8000 --workers 1
+
+Restart=always
+RestartSec=5
+
+# Graceful termination
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Hardening / Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=trading-bot
+
+[Install]
+WantedBy=multi-user.target
