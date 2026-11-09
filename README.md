@@ -2,17 +2,19 @@
 
 Manages **manually placed** Kotak Neo positions only. The bot never opens, re-enters, or increases a position.
 
+> **Trading risk:** Options trading can result in substantial losses. A stop-loss limit order is not guaranteed to execute, especially during fast markets or price gaps. Monitor broker orders yourself; this software is not financial advice and does not guarantee protection or profit.
+
 ## Required flow
 
 1. You manually place an entry order in Kotak Neo.
 2. The bot detects the executed position (WebSocket primary, REST backup).
 3. The bot manages only that existing position.
 4. **Half 1 (50%)** — square-off SL-Limit:
-   - Trigger: entry ± ₹2  
+   - Trigger: entry ± ₹2
    - SL-Limit: entry ± ₹10
 5. **Half 2 (50%)** — Target + companion SL (OCO):
-   - Target: entry ± ₹2  
-   - SL trigger: entry ± ₹2  
+   - Target: entry ± ₹2
+   - SL trigger: entry ± ₹2
    - SL-Limit: entry ± ₹10
 6. Orders are verified as accepted/active at the broker.
 7. If any order fails → Telegram alert + persistent entry lock. Automated trading stops until manual intervention.
@@ -36,7 +38,7 @@ Closing side and price direction are derived from the entry side:
 
 ## Architecture
 
-```
+```text
 Manual entry fill
       │
       ▼
@@ -56,17 +58,22 @@ Failure → Telegram + entry lock → wait for manual action
 
 ## Setup
 
-```bash
-cp .env.example .env
-# Edit .env — keep DRY_RUN=true until credentials and offsets are confirmed
+Requires Python and valid Kotak Neo and (optionally) Telegram configuration. Start in dry-run mode; confirm every setting and broker response before considering live use.
 
-python -m venv venv
-# Windows: .\venv\Scripts\activate
-# Linux/macOS: source venv/bin/activate
+```bash
+# Copy the template, then add credentials locally. Never commit .env.
+cp .env.example .env
+
+python -m venv .venv
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+# Linux/macOS: source .venv/bin/activate
 pip install -r fastapi_app/requirements.txt
 
+# From the repository root
 PYTHONPATH=. python -m fastapi_app.run
 ```
+
+Keep `DRY_RUN=true` until credentials, product settings, lot sizes, and price offsets have been independently confirmed. Do not share broker credentials or tokens.
 
 ## Tests
 
@@ -74,8 +81,9 @@ PYTHONPATH=. python -m fastapi_app.run
 PYTHONPATH=. pytest fastapi_app/tests/test_required_flow.py -v
 ```
 
-## Notes
+## Operational notes
 
 - Lot size is resolved from the broker scrip master (no silent fallback).
 - Product type (`MIS` / `NRML`) is inherited from the entry order.
 - SL-Limit orders can leave residual risk in fast markets if price gaps through the limit.
+- An alert or entry lock is not a substitute for monitoring the broker account and verifying the final position.
