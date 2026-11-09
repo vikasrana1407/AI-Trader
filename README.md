@@ -1,12 +1,12 @@
-# Kotak Neo NIFTY F&O — Position Management Bot
+# Options Position Management Bot
 
-Manages **manually placed** Kotak Neo positions only. The bot never opens, re-enters, or increases a position.
+Manages **manually placed** options positions only. The bot never opens, re-enters, or increases a position.
 
 > **Trading risk:** Options trading can result in substantial losses. A stop-loss limit order is not guaranteed to execute, especially during fast markets or price gaps. Monitor broker orders yourself; this software is not financial advice and does not guarantee protection or profit.
 
 ## Required flow
 
-1. You manually place an entry order in Kotak Neo.
+1. You manually place an entry order with your broker.
 2. The bot detects the executed position (WebSocket primary, REST backup).
 3. The bot manages only that existing position.
 4. **Half 1 (50%)** — square-off SL-Limit:
@@ -16,7 +16,7 @@ Manages **manually placed** Kotak Neo positions only. The bot never opens, re-en
    - Target: entry ± ₹2
    - SL trigger: entry ± ₹2
    - SL-Limit: entry ± ₹10
-6. Orders are verified as accepted/active at the broker.
+6. Orders are verified as accepted/active by the broker.
 7. If any order fails → Telegram alert + persistent entry lock. Automated trading stops until manual intervention.
 
 ### LONG vs SHORT
@@ -30,7 +30,7 @@ Closing side and price direction are derived from the entry side:
 
 ### Strict rules
 
-- No automatic BUY (or any) entry / re-entry orders.
+- No automatic entry or re-entry orders.
 - Never increase position quantity automatically.
 - Never square off the entire position automatically after an order failure.
 - Only manage quantities belonging to the existing position.
@@ -58,7 +58,7 @@ Failure → Telegram + entry lock → wait for manual action
 
 ## Setup
 
-Requires Python and valid Kotak Neo and (optionally) Telegram configuration. Start in dry-run mode; confirm every setting and broker response before considering live use.
+Requires Python and broker API configuration. Start in dry-run mode; confirm every setting and broker response before considering live use.
 
 ```bash
 # Copy the template, then add credentials locally. Never commit .env.
@@ -84,6 +84,6 @@ PYTHONPATH=. pytest fastapi_app/tests/test_required_flow.py -v
 ## Operational notes
 
 - Lot size is resolved from the broker scrip master (no silent fallback).
-- Product type (`MIS` / `NRML`) is inherited from the entry order.
+- Product type is inherited from the entry order.
 - SL-Limit orders can leave residual risk in fast markets if price gaps through the limit.
-- An alert or entry lock is not a substitute for monitoring the broker account and verifying the final position.
+- An alert or entry lock is not a substitute for monitoring your broker account and verifying the final position.
